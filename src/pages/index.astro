@@ -1,23 +1,50 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import MainLayout from "../layouts/Layout.astro";
 ---
 
-<Layout>
-    <div class="container mt-5">
-        <h1 class="text-primary">
-            Welcome to Astro with Bootstrap!
-        </h1>
+<MainLayout title="Home | Astro Basics">
+    <div class="text-center py-5">
+        <h1 class="display-4 fw-bold">Welcome to Astro Basics</h1>
 
-        <p class="lead">
-            We have successfully integrated Bootstrap 5.
+        <p class="lead text-muted mt-3">
+            Learn Astro JS step by step with practical examples.
         </p>
 
-        <button class="btn btn-primary">
-            Get Started
-        </button>
+        <a href="/API/apitest" class="btn btn-primary btn-lg mt-3">
+            Explore API Demo
+        </a>
+    </div>
 
-        <div class="alert alert-success mt-4">
-            Bootstrap is working successfully!
+    <div class="row g-4 mt-4">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h5>Astro Pages</h5>
+                    <p class="text-muted">
+                        Learn how file-based routing works.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h5>Astro Layouts</h5>
+                    <p class="text-muted">
+                        Create reusable layouts for multiple pages.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <h5>Bootstrap 5</h5>
+                    <p class="text-muted">Build responsive websites quickly.</p>
+                </div>
+            </div>
         </div>
     </div>
-</Layout>
+</MainLayout>

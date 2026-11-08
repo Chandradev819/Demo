@@ -1,30 +1,96 @@
 ---
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
+
+const {
+	title = "Astro Basics",
+	description = "Learn Astro JS with practical examples.",
+} = Astro.props;
 ---
+
 <!doctype html>
 <html lang="en">
 	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content={description} />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>{title}</title>
 	</head>
-	<body>
-		<slot />
+
+	<body class="d-flex flex-column min-vh-100 bg-light">
+		<!-- Navigation -->
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+			<div class="container">
+				<a class="navbar-brand fw-bold" href="/"> Astro Basics </a>
+
+				<button
+					class="navbar-toggler"
+					type="button"
+					data-bs-toggle="collapse"
+					data-bs-target="#mainNavbar"
+					aria-controls="mainNavbar"
+					aria-expanded="false"
+					aria-label="Toggle navigation"
+				>
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<div class="collapse navbar-collapse" id="mainNavbar">
+					<ul class="navbar-nav ms-auto">
+						<li class="nav-item">
+							<a class="nav-link" href="/">Home</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="/Images/imagetest"
+								>Images Demo</a
+							>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="/propstest">Prop Demo</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="/API/apitest">
+								API Demo
+							</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<!-- Page Content -->
+		<main class="flex-grow-1">
+			<div class="container py-5">
+				<slot />
+			</div>
+		</main>
+
+		<!-- Footer -->
+		<footer class="bg-dark text-white py-3 mt-auto">
+			<div class="container text-center">
+				<small>
+					© {new Date().getFullYear()} Astro Basics. Built with Astro and
+					Bootstrap 5.
+				</small>
+			</div>
+		</footer>
+
+		<script>
+			import "bootstrap/dist/js/bootstrap.bundle.min.js";
+		</script>
 	</body>
 </html>
 
 <style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
+	html {
+		scroll-behavior: smooth;
 	}
-	
+
+	body {
+		font-family: system-ui, sans-serif;
+	}
+
+	.navbar-brand {
+		letter-spacing: 0.3px;
+	}
 </style>
-<script>
-    import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-</script>

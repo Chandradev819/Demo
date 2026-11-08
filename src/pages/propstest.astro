@@ -1,0 +1,18 @@
+---
+import MainLayout from "../layouts/Layout.astro";
+import StudentCard from "../components/StudentCard.astro";
+---
+
+<MainLayout title="Astro Props Demo">
+    <h1 class="mb-4">Passing Props in Astro</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <StudentCard name="Rahul" course="Astro JS" city="Bangalore" />
+        </div>
+
+        <div class="col-md-6">
+            <StudentCard name="Priya" course="JavaScript" city="Mumbai" />
+        </div>
+    </div>
+</MainLayout>

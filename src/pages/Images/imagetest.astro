@@ -1,0 +1,53 @@
+---
+import MainLayout from "../../layouts/Layout.astro";
+import { Image } from "astro:assets";
+import astroImage from "../../assets/Home1.jpg";
+---
+
+<MainLayout title="Image Demo | Astro Basics">
+    <h1 class="mb-3">Working with Images in Astro</h1>
+
+    <p class="text-muted mb-4">
+        Learn how to display images using HTML and Astro.
+    </p>
+
+    <div class="row g-4">
+        <!-- Example 1: Image from public folder -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <img
+                    src="/Home1.jpg"
+                    alt="Astro demo"
+                    class="card-img-top"
+                    height="250"
+                    style="object-fit: cover;"
+                />
+
+                <div class="card-body">
+                    <h5 class="card-title">1. HTML Image</h5>
+                    <p class="card-text">
+                        This image is loaded from the public folder.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example 2: Astro optimized image -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <Image
+                    src={astroImage}
+                    alt="Astro optimized demo"
+                    width={500}
+                    class="card-img-top"
+                    style="height: 250px; object-fit: cover;"
+                />
+
+                <div class="card-body">
+                    <h5 class="card-title">2. Astro Image</h5>
+                    <p class="card-text">This image is optimized by Astro.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</MainLayout>

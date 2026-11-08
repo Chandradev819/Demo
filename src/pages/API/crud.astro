@@ -1,0 +1,82 @@
+---
+import MainLayout from "../../layouts/Layout.astro";
+---
+
+<MainLayout title="CRUD API Demo | Astro Basics">
+    <h2 class="mb-3">Astro CRUD API Demo</h2>
+
+    <p class="text-muted">Learn how to call REST APIs using JavaScript.</p>
+
+    <div class="mb-4 d-flex flex-wrap gap-2">
+        <button id="btnGet" class="btn btn-primary">GET</button>
+        <button id="btnPost" class="btn btn-success">POST</button>
+        <button id="btnPut" class="btn btn-warning">PUT</button>
+        <button id="btnDelete" class="btn btn-danger">DELETE</button>
+    </div>
+
+    <h5>API Response</h5>
+    <pre
+        id="result"
+        class="bg-dark text-white p-3 rounded">
+Click a button to call the API.
+    </pre>
+</MainLayout>
+
+<script>
+    const apiUrl = "https://jsonplaceholder.typicode.com/posts";
+
+    const result = document.querySelector("#result") as HTMLElement;
+
+    // READ
+    document.querySelector("#btnGet")?.addEventListener("click", async () => {
+        const response = await fetch(`${apiUrl}/1`);
+        const data = await response.json();
+        result.textContent = JSON.stringify(data, null, 2);
+    });
+
+    // CREATE
+    document.querySelector("#btnPost")?.addEventListener("click", async () => {
+        const response = await fetch(apiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                title: "My New Post",
+                body: "Created from Astro",
+                userId: 1,
+            }),
+        });
+
+        const data = await response.json();
+        result.textContent = JSON.stringify(data, null, 2);
+    });
+
+    // UPDATE
+    document.querySelector("#btnPut")?.addEventListener("click", async () => {
+        const response = await fetch(`${apiUrl}/1`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                id: 1,
+                title: "Updated Post",
+                body: "Updated from Astro",
+                userId: 1,
+            }),
+        });
+
+        const data = await response.json();
+        result.textContent = JSON.stringify(data, null, 2);
+    });
+
+    // DELETE
+    document
+        .querySelector("#btnDelete")
+        ?.addEventListener("click", async () => {
+            const response = await fetch(`${apiUrl}/1`, {
+                method: "DELETE",
+            });
+
+            result.textContent = response.ok
+                ? "Delete request successful!"
+                : "Delete request failed!";
+        });
+</script>
