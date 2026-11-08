@@ -101,3 +101,75 @@ perform these browser checks using your configured Clerk instance.
 References:
 - https://clerk.com/docs/reference/astro/clerk-middleware
 - https://docs.astro.build/en/guides/routing/
+
+## Dodo Payments checkout
+
+The public `/pricing` page has Free and Pro cards. Signed-out visitors can open
+Clerk sign-in directly from the Pro card and return to pricing. Signed-in users
+submit a same-origin POST to `/API/checkout`, which creates a hosted Dodo Checkout
+Session using the server-configured product. The API never accepts a product ID,
+price, user ID, or return URL from the browser. Your Dodo product determines
+whether the purchase is one-time or recurring, and its price. When configured,
+the page fetches and displays the base product price; checkout shows the final
+price, taxes, localization and discounts.
+
+### Setup
+
+Keep your existing Clerk entries in `.env` and add the Dodo entries shown in
+`.env.example` (do not overwrite your existing keys):
+
+```dotenv
+APP_URL=http://localhost:4321
+DODO_PAYMENTS_ENVIRONMENT=test_mode
+DODO_PAYMENTS_API_KEY=your_test_api_key
+DODO_PRO_PRODUCT_ID=your_test_product_id
+```
+
+1. In the Dodo Payments test dashboard, create a fixed-price Pro product. For a
+   SaaS subscription, create a recurring product and configure its price and
+   billing interval there. The example does not create products in your account.
+2. Give the key Products Read, Checkout Sessions Read/Write, and Payments Read
+   permissions. A restricted key without these permissions returns HTTP 403
+   `INSUFFICIENT_PERMISSION`, even when the key and product ID are filled in.
+   Set the test API key and product ID in your local `.env`. Never prefix these
+   server settings with `PUBLIC_`. Restart the dev server after changing them.
+3. Set `APP_URL` to the exact origin you use in the browser, including the port.
+   `localhost` and `127.0.0.1` are different origins. In production use your HTTPS
+   origin, `live_mode`, and a matching live API key and live product.
+4. Open `/pricing`, sign in, and click Continue to checkout. Complete a test
+   payment using Dodo's documented test payment methods.
+5. Verify `/billing/return` displays the provider-confirmed result. Test cancel,
+   failed payment, signed-out checkout, and another Clerk account as well.
+
+### Confirmation and paid access
+
+The return page uses an HttpOnly checkout-session cookie to locate the latest
+checkout in this browser. It retrieves the actual payment from Dodo and checks
+its metadata against the verified Clerk user before showing success. Browser
+query parameters such as `status=succeeded` are not trusted. If the cookie is
+missing, expired, overwritten by another checkout, or the provider is unreachable,
+the page shows that it cannot confirm the payment rather than inventing success.
+
+This integration handles hosted checkout and payment confirmation. It does not
+yet grant Pro features or maintain subscription entitlements. There is no billing
+database in this project. Before gating paid features, add a durable billing store
+and a signature-verified, idempotent Dodo webhook handler for payments,
+subscriptions, renewals, cancellations, refunds, and failures. Use server-written
+`clerk_user_id` metadata to associate billing records with accounts. Do not grant
+access merely because someone reaches the return URL. Add persisted checkout
+idempotency and rate limits before accepting live payments, and prevent duplicate
+subscriptions using your stored subscription state.
+
+### Checks
+
+```sh
+npm run test:billing
+npm run build
+```
+
+The billing tests mock provider calls. They check authentication, request origin,
+server-selected products and account metadata, safe redirects, generic provider
+errors, private response headers, and payment ownership verification. They do not
+charge a card or replace testing with a real Dodo test account.
+
+Official SDK reference: https://github.com/dodopayments/dodopayments-typescript

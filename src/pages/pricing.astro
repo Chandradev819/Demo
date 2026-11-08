@@ -1,9 +1,84 @@
 ---
 import MainLayout from "../layouts/Layout.astro";
+import { SignInButton } from "@clerk/astro/components";
+import { getProPrice } from "../lib/dodo";
+
+export const prerender = false;
+Astro.response.headers.set("Cache-Control", "private, no-store");
+const signedIn = Astro.locals.auth().isAuthenticated;
+const cancelled = Astro.url.searchParams.get("checkout") === "cancelled";
+const proPrice = await getProPrice();
 ---
 
 <MainLayout title="Pricing">
-    <h1>Simple plans for your workspace</h1>
-    <p>Start with a free account. Team plans are coming soon.</p>
-    <a class="btn btn-primary" href="/Auth/login">Get started</a>
+    <section class="mx-auto" style="max-width: 850px">
+        <div class="text-center mb-5">
+            <p class="text-primary fw-semibold">SIMPLE PRICING</p>
+            <h1 class="display-5 fw-bold">A plan for your next idea</h1>
+            <p class="lead text-muted">Start free. Choose Pro when you are ready for more.</p>
+        </div>
+        {cancelled && <p class="alert alert-info" role="status">Checkout was cancelled. You can try again whenever you are ready.</p>}
+        <div class="row g-4">
+            <div class="col-md-6">
+                <article class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <h2 class="h4">Free</h2>
+                        <p class="display-6 fw-bold my-3">$0 <span class="fs-6 fw-normal text-muted">to get started</span></p>
+                        <p class="text-muted">Explore your personal workspace.</p>
+                        <ul class="mb-4"><li>Personal account</li><li>Workspace dashboard</li><li>No payment required</li></ul>
+                        <a class="btn btn-outline-primary mt-auto" href={signedIn ? "/Auth/dashboard" : "/Auth/login"}>{signedIn ? "Open workspace" : "Get started free"}</a>
+                    </div>
+                </article>
+            </div>
+            <div class="col-md-6">
+                <article class="card border-primary shadow-sm h-100">
+                    <div class="card-body p-4 d-flex flex-column">
+                        <h2 class="h4">Pro</h2>
+                        <p class="h2 fw-bold my-3">{proPrice || "Price at checkout"}</p>
+                        <p class="text-muted">See the current price and billing interval at checkout.</p>
+                        <ul class="mb-4"><li>Everything in Free</li><li>Secure hosted payment</li><li>Receipt for your purchase</li></ul>
+                        {signedIn ? (
+                            <form id="checkout-form" method="POST" action="/API/checkout" class="mt-auto">
+                                <input type="hidden" name="plan" value="pro" />
+                                <button id="checkout-button" class="btn btn-primary w-100" type="submit">Continue to checkout</button>
+                            </form>
+                        ) : (
+                            <div class="mt-auto"><SignInButton mode="modal" forceRedirectUrl="/pricing" signUpForceRedirectUrl="/pricing" class="btn btn-primary w-100">Sign in to choose Pro</SignInButton></div>
+                        )}
+                        <p id="checkout-error" class="text-danger small mt-3 mb-0" role="alert" hidden></p>
+                    </div>
+                </article>
+            </div>
+        </div>
+        <p class="text-center small text-muted mt-4">Payments are handled by Dodo Payments. Review your total, taxes, and renewal terms before paying.</p>
+    </section>
 </MainLayout>
+
+<script>
+    const form = document.querySelector<HTMLFormElement>("#checkout-form");
+    const button = document.querySelector<HTMLButtonElement>("#checkout-button");
+    const error = document.querySelector<HTMLElement>("#checkout-error");
+    form?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!button || !error || button.disabled) return;
+        button.disabled = true;
+        button.textContent = "Opening checkout…";
+        error.hidden = true;
+        try {
+            const response = await fetch(form.action, {
+                method: "POST",
+                headers: { Accept: "application/json" },
+                body: new URLSearchParams({ plan: "pro" }),
+            });
+            const result = await response.json();
+            if (!response.ok || !result.checkoutUrl) throw new Error(result.error || "Unable to open checkout.");
+            window.location.assign(result.checkoutUrl);
+            return;
+        } catch (cause) {
+            error.textContent = cause instanceof Error ? cause.message : "Unable to connect. Please try again.";
+            error.hidden = false;
+            button.disabled = false;
+            button.textContent = "Continue to checkout";
+        }
+    });
+</script>

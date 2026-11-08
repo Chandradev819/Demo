@@ -6,6 +6,7 @@
     "node": ">=22.23.4"
   },
   "scripts": {
+    "test:billing": "node --test tests/billing.test.ts",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
@@ -15,6 +16,7 @@
     "@astrojs/node": "^11.1.11",
     "@clerk/astro": "^4.1.22",
     "astro": "^7.4.7",
-    "bootstrap": "^5.3.8"
+    "bootstrap": "^5.3.8",
+    "dodopayments": "^2.61.1"
   }
 }

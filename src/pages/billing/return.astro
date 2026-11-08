@@ -1,0 +1,46 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getBillingConfig, getDodoClient } from "../../lib/dodo";
+import { verifiedPaymentStatus } from "../../lib/payment-status";
+
+export const prerender = false;
+const { isAuthenticated, userId } = Astro.locals.auth();
+if (!isAuthenticated || !userId) return Astro.redirect("/Auth/login");
+Astro.response.headers.set("Cache-Control", "private, no-store");
+Astro.response.headers.set("Referrer-Policy", "no-referrer");
+const config = getBillingConfig();
+const sessionId = Astro.cookies.get("dodo_checkout")?.value;
+let status: "succeeded" | "pending" | "failed" | "unavailable" = "unavailable";
+if (config && sessionId) {
+    try {
+        const client = getDodoClient(config);
+        status = await verifiedPaymentStatus(
+            sessionId,
+            userId,
+            (id) => client.checkoutSessions.retrieve(id),
+            (id) => client.payments.retrieve(id),
+        );
+    } catch {
+        status = "unavailable";
+    }
+}
+const messages = {
+    succeeded: { title: "Payment received", body: "Thank you. Dodo Payments has confirmed your payment." },
+    pending: { title: "Payment is being confirmed", body: "Your payment has not been confirmed yet. Check again in a moment." },
+    failed: { title: "Payment did not complete", body: "Your payment was cancelled or failed. You can return to pricing to try again." },
+    unavailable: { title: "Unable to confirm payment", body: "We could not verify a payment for this account. Check your receipt before making another payment." },
+};
+const message = messages[status];
+---
+
+<Layout title={message.title}>
+    <section class="card border-0 shadow-sm mx-auto" style="max-width: 620px">
+        <div class="card-body p-5">
+            <h1 class="h2">{message.title}</h1>
+            <p class="text-muted" role="status">{message.body}</p>
+            {status === "pending" && <a class="btn btn-primary me-2" href="/billing/return">Check payment status</a>}
+            <a class="btn btn-outline-primary me-2" href="/Auth/dashboard">Open workspace</a>
+            <a class="btn btn-link" href="/pricing">Back to pricing</a>
+        </div>
+    </section>
+</Layout>
