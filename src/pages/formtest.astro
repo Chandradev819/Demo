@@ -1,0 +1,94 @@
+---
+import MainLayout from "../layouts/Layout.astro";
+---
+
+<MainLayout title="Astro Form Demo">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="mb-3">Contact Form</h2>
+                    <p class="text-muted">
+                        Simple Astro form using Bootstrap 5
+                    </p>
+
+                    <form id="contactForm">
+                        <!-- Name -->
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input
+                                type="text"
+                                id="name"
+                                class="form-control"
+                                required
+                            />
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input
+                                type="email"
+                                id="email"
+                                class="form-control"
+                                required
+                            />
+                        </div>
+
+                        <!-- Message -->
+                        <div class="mb-3">
+                            <label for="message" class="form-label">
+                                Message
+                            </label>
+                            <textarea
+                                id="message"
+                                class="form-control"
+                                rows="4"
+                                required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            Submit
+                        </button>
+                    </form>
+
+                    <!-- Display Submitted Data -->
+                    <div id="result" class="alert alert-success mt-3 d-none">
+                        <h5>Form Submitted Successfully!</h5>
+                        <p>Name: <span id="displayName"></span></p>
+                        <p>Email: <span id="displayEmail"></span></p>
+                        <p class="mb-0">
+                            Message: <span id="displayMessage"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</MainLayout>
+
+<script>
+    const form = document.querySelector<HTMLFormElement>("#contactForm");
+    const result = document.querySelector("#result");
+
+    form?.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        // Get user input values
+        const name = document.querySelector<HTMLInputElement>("#name")?.value;
+        const email = document.querySelector<HTMLInputElement>("#email")?.value;
+        const message =
+            document.querySelector<HTMLTextAreaElement>("#message")?.value;
+
+        // Display submitted data
+        document.querySelector("#displayName")!.textContent = name ?? "";
+        document.querySelector("#displayEmail")!.textContent = email ?? "";
+        document.querySelector("#displayMessage")!.textContent = message ?? "";
+
+        // Show success message
+        result?.classList.remove("d-none");
+
+        // Clear form fields
+        form.reset();
+    });
+</script>
