@@ -1,4 +1,10 @@
 ---
+import {
+	Show,
+	UserButton,
+	SignInButton,
+	SignUpButton,
+} from "@clerk/astro/components";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const {
@@ -57,6 +63,13 @@ const {
 							</a>
 						</li>
 					</ul>
+					<Show when="signed-out">
+						<SignInButton mode="modal" />
+						<SignUpButton mode="modal" />
+					</Show>
+					<Show when="signed-in">
+						<UserButton />
+					</Show>
 				</div>
 			</div>
 		</nav>

@@ -12,6 +12,8 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/node": "^11.1.11",
+    "@clerk/astro": "^4.1.22",
     "astro": "^7.4.7",
     "bootstrap": "^5.3.8"
   }
