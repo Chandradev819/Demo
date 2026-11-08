@@ -1,0 +1,15 @@
+---
+import MainLayout from "../../layouts/Layout.astro";
+import { SignOutButton } from "@clerk/astro/components";
+
+export const prerender = false;
+Astro.response.headers.set("Cache-Control", "private, no-store");
+if (!Astro.locals.auth().isAuthenticated) {
+    return Astro.redirect("/Auth/login");
+}
+---
+
+<MainLayout title="Sign out">
+    <h1>Sign out of your account</h1>
+    <SignOutButton redirectUrl="/" />
+</MainLayout>

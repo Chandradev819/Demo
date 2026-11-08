@@ -4,6 +4,7 @@ import {
 	UserButton,
 	SignInButton,
 	SignUpButton,
+	SignOutButton,
 } from "@clerk/astro/components";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -44,6 +45,14 @@ const {
 				<div class="collapse navbar-collapse" id="mainNavbar">
 					<ul class="navbar-nav ms-auto">
 						<li class="nav-item">
+							<a class="nav-link" href="/pricing">Pricing</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="/Auth/dashboard"
+								>Workspace</a
+							>
+						</li>
+						<li class="nav-item">
 							<a class="nav-link" href="/">Home</a>
 						</li>
 						<li class="nav-item">
@@ -64,8 +73,11 @@ const {
 						</li>
 					</ul>
 					<Show when="signed-out">
-						<SignInButton mode="modal" />
-						<SignUpButton mode="modal" />
+						<SignInButton
+							mode="modal"
+							forceRedirectUrl="/Auth/dashboard"
+							signUpForceRedirectUrl="/Auth/dashboard"
+						/>
 					</Show>
 					<Show when="signed-in">
 						<UserButton />

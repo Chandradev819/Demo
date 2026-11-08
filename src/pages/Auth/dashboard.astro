@@ -1,0 +1,18 @@
+---
+import MainLayout from "../../layouts/Layout.astro";
+
+export const prerender = false;
+Astro.response.headers.set("Cache-Control", "private, no-store");
+// Check before fetching private data or rendering any HTML.
+const { isAuthenticated, userId } = Astro.locals.auth();
+if (!isAuthenticated || !userId) {
+    return Astro.redirect("/Auth/login");
+}
+---
+
+<MainLayout title="Your workspace">
+    <h1>Your workspace</h1>
+    <p>You are signed in. Your account ID is <code>{userId}</code>.</p>
+    <a class="btn btn-primary" href="/API/me">View your private account API</a>
+    <a class="btn btn-outline-secondary" href="/Auth/logout">Sign out</a>
+</MainLayout>
