@@ -1,0 +1,175 @@
+
+---
+import MainLayout from "../../layouts/Layout.astro";
+---
+
+<MainLayout title="JavaScript Demo | Astro Basics">
+    <h2 class="mb-2">Working with JavaScript in Astro</h2>
+    <p class="text-muted mb-4">
+        Learn how to handle events, update HTML elements,
+        and interact with users using JavaScript.
+    </p>
+
+    <div class="row g-4">
+        <!-- Example 1: Change Text -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5>1. Change Text</h5>
+                    <p id="message">
+                        Click the button to change this message.
+                    </p>
+                    <button id="changeButton" class="btn btn-primary">
+                        Change Message
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example 2: Change Style -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5>2. Change CSS Style</h5>
+                    <p id="colorText">
+                        JavaScript can change element styles.
+                    </p>
+                    <button id="colorButton" class="btn btn-success">
+                        Change Color
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example 3: Show / Hide -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5>3. Show / Hide Element</h5>
+                    <p id="secretMessage" class="alert alert-info">
+                        This message can be hidden!
+                    </p>
+                    <button id="toggleButton" class="btn btn-warning">
+                        Hide Message
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example 4: Read Input -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5>4. Read User Input</h5>
+                    <input
+                        type="text"
+                        id="nameInput"
+                        class="form-control mb-3"
+                        placeholder="Enter your name"
+                    />
+                    <button id="greetButton" class="btn btn-info">
+                        Say Hello
+                    </button>
+                    <p id="greeting" class="mt-3 mb-0"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example 5: Counter -->
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h5>5. JavaScript Counter</h5>
+                    <h2 id="counter" class="my-3">0</h2>
+
+                    <div class="d-flex justify-content-center gap-2">
+                        <button id="decrease" class="btn btn-danger">
+                            - Decrease
+                        </button>
+                        <button id="reset" class="btn btn-secondary">
+                            Reset
+                        </button>
+                        <button id="increase" class="btn btn-success">
+                            + Increase
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</MainLayout>
+
+<script>
+    // 1. Change Text
+    const changeButton = document.querySelector("#changeButton");
+    const message = document.querySelector("#message");
+
+    changeButton?.addEventListener("click", () => {
+        if (message) {
+            message.textContent = "Hello! JavaScript is working in Astro.";
+        }
+    });
+
+    // 2. Change CSS Style
+    const colorButton = document.querySelector("#colorButton");
+    const colorText = document.querySelector("#colorText") as HTMLElement;
+
+    colorButton?.addEventListener("click", () => {
+        colorText.style.color = "blue";
+        colorText.style.fontWeight = "bold";
+    });
+
+    // 3. Show / Hide
+    const toggleButton = document.querySelector("#toggleButton");
+    const secretMessage = document.querySelector("#secretMessage") as HTMLElement;
+
+    toggleButton?.addEventListener("click", () => {
+        secretMessage.classList.toggle("d-none");
+
+        toggleButton.textContent =
+            secretMessage.classList.contains("d-none")
+                ? "Show Message"
+                : "Hide Message";
+    });
+
+    // 4. Read Input
+    const greetButton = document.querySelector("#greetButton");
+    const nameInput = document.querySelector("#nameInput") as HTMLInputElement;
+    const greeting = document.querySelector("#greeting");
+
+    greetButton?.addEventListener("click", () => {
+        const name = nameInput.value.trim();
+
+        if (greeting) {
+            greeting.textContent = name
+                ? `Hello, ${name}! Welcome to Astro.`
+                : "Please enter your name.";
+        }
+    });
+
+    // 5. Counter
+    let count = 0;
+
+    const counter = document.querySelector("#counter");
+
+    function updateCounter() {
+        if (counter) {
+            counter.textContent = count.toString();
+        }
+    }
+
+    document.querySelector("#increase")?.addEventListener("click", () => {
+        count++;
+        updateCounter();
+    });
+
+    document.querySelector("#decrease")?.addEventListener("click", () => {
+        count--;
+        updateCounter();
+    });
+
+    document.querySelector("#reset")?.addEventListener("click", () => {
+        count = 0;
+        updateCounter();
+    });
+</script>

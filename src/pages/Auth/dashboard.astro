@@ -2,17 +2,109 @@
 import MainLayout from "../../layouts/Layout.astro";
 
 export const prerender = false;
+
 Astro.response.headers.set("Cache-Control", "private, no-store");
-// Check before fetching private data or rendering any HTML.
+
 const { isAuthenticated, userId } = Astro.locals.auth();
+
 if (!isAuthenticated || !userId) {
     return Astro.redirect("/Auth/login");
 }
 ---
 
-<MainLayout title="Your workspace">
-    <h1>Your workspace</h1>
-    <p>You are signed in. Your account ID is <code>{userId}</code>.</p>
-    <a class="btn btn-primary" href="/API/me">View your private account API</a>
-    <a class="btn btn-outline-secondary" href="/Auth/logout">Sign out</a>
+<MainLayout title="Bearer Token API Demo | Astro">
+    <div class="container py-4">
+        <h2 class="fw-bold mb-2">Bearer Token API Demo</h2>
+        <p class="text-muted mb-4">
+            Learn how to call a protected REST API using a Clerk JWT bearer
+            token.
+        </p>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5>Authenticated User</h5>
+                <p class="mb-0">
+                    Clerk User ID:
+                    <code>{userId}</code>
+                </p>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="mb-3">Call Protected API</h5>
+
+                <p class="text-muted">
+                    Click the button to retrieve your Clerk token and send it in
+                    the Authorization header.
+                </p>
+
+                <button type="button" id="btnCallApi" class="btn btn-primary">
+                    Call API with Bearer Token
+                </button>
+
+                <div id="apiStatus" class="mt-3" role="status"></div>
+
+                <h6 class="mt-4">API Response</h6>
+
+                <pre
+                    id="apiResult"
+                    class="bg-dark text-light p-3 rounded"
+                    style="min-height:150px;white-space:pre-wrap;overflow-wrap:anywhere;">Click the button to call the API.</pre>
+            </div>
+        </div>
+    </div>
 </MainLayout>
+
+<script>
+    const button = document.querySelector<HTMLButtonElement>("#btnCallApi");
+
+    const result = document.querySelector<HTMLElement>("#apiResult");
+
+    const status = document.querySelector<HTMLElement>("#apiStatus");
+
+    button?.addEventListener("click", async (): Promise<void> => {
+        if (!button || !result || !status) return;
+
+        button.disabled = true;
+        status.textContent = "Calling protected API...";
+        result.textContent = "";
+
+        try {
+            // Step 1: Get Clerk JWT
+            const token = await window.Clerk?.session?.getToken();
+
+            if (!token) {
+                throw new Error("No active Clerk session found.");
+            }
+
+            // Step 2: Call API with Bearer token
+            const response = await fetch("/API/me", {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: "application/json",
+                },
+            });
+
+            // Step 3: Read response
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    `API returned HTTP ${response.status}: ${JSON.stringify(data)}`,
+                );
+            }
+
+            result.textContent = JSON.stringify(data, null, 2);
+            status.textContent = "API call successful!";
+        } catch (error) {
+            status.textContent = "API call failed.";
+
+            result.textContent =
+                error instanceof Error ? error.message : "Unknown error";
+        } finally {
+            button.disabled = false;
+        }
+    });
+</script>
